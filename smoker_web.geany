@@ -1,0 +1,79 @@
+[editor]
+line_wrapping=false
+line_break_column=72
+auto_continue_multiline=true
+
+[file_prefs]
+final_new_line=true
+ensure_convert_new_lines=false
+strip_trailing_spaces=true
+replace_tabs=false
+
+[indentation]
+indent_width=4
+indent_type=1
+indent_hard_tab_width=8
+detect_indent=true
+detect_indent_width=true
+indent_mode=2
+
+[project]
+name=smoker_web
+base_path=./
+description=
+file_patterns=
+
+[long line marker]
+long_line_behaviour=1
+long_line_column=72
+
+[build-menu]
+filetypes=C++;None;
+C++FT_00_LB=_Make
+C++FT_00_CM=make
+C++FT_00_WD=%d/../
+C++FT_01_LB=Make _All
+C++FT_01_CM=make all
+C++FT_01_WD=%d/../
+EX_00_LB=_Execute
+EX_00_CM=make run
+EX_00_WD=%p/
+C++FT_02_LB=Make _Clean
+C++FT_02_CM=make clean
+C++FT_02_WD=%d/../
+NF_00_LB=Make _Clean
+NF_00_CM=make clean
+NF_00_WD=%p/
+NF_01_LB=Make C_ommit
+NF_01_CM=make commit COMMIT_COMMENT=
+NF_01_WD=%p/
+NF_02_LB=Make _Push
+NF_02_CM=make push
+NF_02_WD=%p/
+NF_03_LB=Make P_ull
+NF_03_CM=make pull
+NF_03_WD=%p/
+NoneFT_00_LB=Git Commit Wiki
+NoneFT_00_CM=make commit_wiki
+NoneFT_00_WD=%d/
+NoneFT_01_LB=Git Push Wiki
+NoneFT_01_CM=make push_wiki
+NoneFT_01_WD=%d/
+NoneFT_02_LB=Git Pull WIki
+NoneFT_02_CM=make pull_wiki
+NoneFT_02_WD=%d/
+
+[prjorg]
+source_patterns=*.c;*.C;*.cpp;*.cxx;*.c++;*.cc;*.m;*.am;*.ac;
+header_patterns=*.h;*.H;*.hpp;*.hxx;*.h++;*.hh;
+ignored_dirs_patterns=.*;CVS;
+ignored_file_patterns=*.o;*.obj;*.a;*.lib;*.so;*.dll;*.lo;*.la;*.class;*.jar;*.pyc;*.mo;*.gmo;
+generate_tag_prefs=0
+external_dirs=
+
+[files]
+current_page=0
+FILE_NAME_0=722;Make;0;EUTF-8;1;1;0;%2Fhome%2Fdave%2FDesktop%2Fprojects%2Fsmoker_web%2Fmakefile;0;4
+
+[VTE]
+last_dir=/home/dave
