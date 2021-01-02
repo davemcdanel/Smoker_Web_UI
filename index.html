@@ -30,19 +30,25 @@
 		<script src="dygraph-combined.js"></script>
 
 		<script type="text/javascript">
-			function initialize(){
+			function initializeGraph(){
 				g2 = new Dygraph(document.getElementById("graphdiv2"),"temperatures.csv",{colors: ["red","blue","orange","green"]});
 			}
 		</script>
 	</head>
-	<body onload="initialize();">
+	<body onload="initializeGraph();">
 		<!-- Home -->
 		<div data-role="page" id="page1" style="width:100%; height:100%;">
 			<div data-theme="a" data-role="header" style="width:100%; height:10%;">
-				<h3>
-					Dave's Red Smoker          v0.1.1
-				</h3>
-			</div>
+        <p style="font-weight: bold; text-align: center; width: 100%;">Dave's Red Smoker v0.2.1</p>
+        <table class="header" style="width:100%">
+          <tr>
+            <td>ID:</td>
+            <td><input type="text" id="receiver-id" title="Input the ID from your smoker controller."></td>
+            <td><div id="status">Status: Enter smoker ID</div></td>
+            <td><button id="connect-button">Connect</button></td>
+          </tr>
+        </table>
+      </div>
 			<div data-role="content" style="width:100%; height:65%;">
 				<div align=right style="width:95%; height:5%;">
 					Download data file
@@ -56,48 +62,24 @@
 						<span>Temp:
 							<font color="red">
 								<span id="temperature"></span>
-								<script>
-									$('#temperature').load('/cgi-bin/controller','get temperature');
-									setInterval(function(){
-										$('#temperature').load('/cgi-bin/controller','get temperature');
-									}, 1500);
-								</script>
 							</font>
 						</span>
 						<span>
 							&emsp; SP:
 							<font color="blue">
 								<span id="setpoint"></span>
-								<script>
-									$('#setpoint').load('/cgi-bin/controller','get setpoint');
-									setInterval(function(){
-										$('#setpoint').load('/cgi-bin/controller','get setpoint');
-									}, 1500);
-								</script>
 							</font>
 						</span>
 						<span>
 							&emsp; INT:
 							<font color="orange">
 								<span id="internal"></span>
-								<script>
-									$('#internal').load('/cgi-bin/controller','get internal');
-									setInterval(function(){
-										$('#internal').load('/cgi-bin/controller','get internal');
-									}, 1500);
-								</script>
 							</font>
 						</span>
 						<span>
 							&emsp; OP:
 							<font color="green">
 								<span id="output"></span>
-								<script>
-									$('#output').load('/cgi-bin/controller','get output');
-									setInterval(function(){
-										$('#output').load('/cgi-bin/controller','get output');
-									}, 1500);
-								</script>
 							</font>
 						</span>
 						<span>
@@ -106,7 +88,7 @@
 								$("#refreshgraph").click(function() {
 									$.mobile.loading( 'show', { theme: "b", text: "Loading......", textonly: true });
 									///g2.destroy();
-									///initialize();
+									///initializeGraph();
 									g2.annotations();
 									$.mobile.loading( 'hide' );
 								});
@@ -127,10 +109,6 @@
 									Setpoint:
 								</label>
 								<input name="" id="set_setpoint" placeholder="Setpoint:" value="" type="text">
-								<script>$("#set_setpoint").live("change" , function() {
-										$.get("/cgi-bin/controller", ("set setpoint," + $("#set_setpoint").val()));
-									});
-								</script>
 							</fieldset>
 						</div>
 					</div>
@@ -148,10 +126,6 @@
 											Prop:
 										</label>
 										<input name="" id="set_prop" placeholder="Prop:" value="" type="text">
-										<script>$("#set_prop").live("change" , function() {
-												$.get("/cgi-bin/controller", "set prop," + $("#set_prop").val());
-											});
-										</script>
 									</fieldset>
 								</div>
 							</div>
@@ -164,19 +138,11 @@
 											Inter:
 										</label>
 										<input name="" id="set_inter" placeholder="Inter:" value="" type="text">
-										<script>$("#set_inter").live("change" , function() {
-												$.get("/cgi-bin/controller", "set inter," + $("#set_inter").val());
-											});
-										</script>
 									</fieldset>
 								</div>
 							</div>
 							<div class="ui-block-b">
 								<a data-role="button" id="savepid">Save to File</a>
-									<script>$("#savepid").live("click" , function() {
-											$.get("/cgi-bin/controller", "set savePID," + "true");
-										});
-									</script>
 							</div>
 							<div class="ui-block-a">
 								<div data-role="fieldcontain">
@@ -185,10 +151,6 @@
 											Derv:
 										</label>
 										<input name="" id="set_derv" placeholder="Derv:" value="" type="text">
-										<script>$("#set_derv").live("change" , function() {
-												$.get("/cgi-bin/controller", "set derv," + $("#set_derv").val());
-											});
-										</script>
 									</fieldset>
 								</div>
 							</div>
@@ -210,10 +172,6 @@
 											Record Timebase:
 										</label>
 										<input name="" id="graphtimebase" placeholder="Graph Timebase:" value="" type="text">
-										<script>$("#graphtimebase").live("change" , function() {
-												$.get("/cgi-bin/controller", "set graphtimebase," + $("#graphtimebase").val());
-											});
-										</script>
 									</fieldset>
 								</div>
 							</div>
@@ -222,7 +180,7 @@
 								<script>$("#resetdata").click(function() {
 										$.get("/cgi-bin/controller", "set resetdata," + "true");
 										g2.destroy();
-										initialize();
+										initializeGraph();
 									});
 								</script>
 							</div>
@@ -231,5 +189,229 @@
 				</div>
 			</div>
 		</div>
+    <script src="https://cdn.jsdelivr.net/npm/peerjs@1.2.0/dist/peerjs.min.js"></script>
+    <script type="text/javascript">
+        (function () {
+
+            var lastPeerId = null;
+            var peer = null; // own peer object
+            var conn = null;
+            var recvIdInput = document.getElementById("receiver-id");
+            var status = document.getElementById("status");
+            var connectButton = document.getElementById("connect-button");
+            const set_setpoint = document.getElementById("set_setpoint");
+            const temperature = document.getElementById("temperature");
+            const setpoint = document.getElementById("setpoint");
+            const internal = document.getElementById("internal");
+            const output = document.getElementById("output");
+            var request_list = ["temperature","setpoint","internal","output","prop","inter","derv"];
+            var request_string;
+            var request_itarator = 0;
+
+            /**
+             * Create the Peer object for our end of the connection.
+             *
+             * Sets up callbacks that handle any events related to our
+             * peer object.
+             */
+            function initializePeerJS() {
+                // Create own peer object with connection to shared PeerJS server
+                peer = new Peer(null, {
+                    debug: 2
+                });
+
+                peer.on('open', function (id) {
+                    // Workaround for peer.reconnect deleting previous id
+                    if (peer.id === null) {
+                        status.innerHTML = "Status: " + "Received null id from peer open.";
+                        console.log('Received null id from peer open');
+                        peer.id = lastPeerId;
+                    } else {
+                        lastPeerId = peer.id;
+                    }
+
+                    console.log('ID: ' + peer.id);
+                });
+                peer.on('connection', function (c) {
+                    // Disallow incoming connections
+                    c.on('open', function() {
+                        c.send("Sender does not accept incoming connections");
+                        setTimeout(function() { c.close(); }, 500);
+                    });
+                });
+                peer.on('disconnected', function () {
+                    status.innerHTML = "Status: " + "Connection lost. Please reconnect.";
+                    console.log('Connection lost. Please reconnect');
+
+                    // Workaround for peer.reconnect deleting previous id
+                    peer.id = lastPeerId;
+                    peer._lastServerId = lastPeerId;
+                    peer.reconnect();
+                });
+                peer.on('close', function() {
+                    conn = null;
+                    status.innerHTML = "Status: " + "Connection destroyed. Please refresh.";
+                    console.log('Connection destroyed');
+                });
+                peer.on('error', function (err) {
+                    console.log(err);
+                    alert('' + err);
+                });
+            };
+
+            /**
+             * Create the connection between the two Peers.
+             *
+             * Sets up callbacks that handle any events related to the
+             * connection and data received on it.
+             */
+            function join() {
+                // Close old connection
+                if (conn) {
+                    conn.close();
+                }
+
+                console.log('Clicked - Connect');
+                // Create connection to destination peer specified in the input field
+                conn = peer.connect(recvIdInput.value, {
+                    reliable: true
+                });
+
+                conn.on('open', function () {
+                    status.innerHTML = "Status: " + "Connected to - " + conn.peer;
+                    console.log("Connected to: " + conn.peer);
+
+                    // Check URL params for comamnds that should be sent immediately
+                    var command = getUrlParam("command");
+                    if (command)
+                        conn.send(command);
+                });
+                // Handle incoming data (messages only since this is the signal sender)
+                conn.on('data', function (data) {
+                    //addMessage("<span class=\"peerMsg\">Peer:</span> " + data);
+                    console.log("Recieved: " + data);
+                    let cmd = data.split(" ");
+                    switch (cmd[0]) {
+                      case 'Get':
+                        switch (cmd[1]){
+                          case 'temperature':
+                            break;
+                          case 'setpoint':
+                            break;
+                          case 'internal':
+                            break;
+                          case 'output':
+                            break;
+                          case 'prop':
+                            break;
+                          case 'inter':
+                            break;
+                          case 'derv':
+                            break;
+                          default:
+                        }
+                        break;
+                      case 'Set':
+                        switch (cmd[1]){
+                          case 'temperature':
+                            temperature.innerHTML = cmd[2];
+                            break;
+                          case 'setpoint':
+                            setpoint.innerHTML = cmd[2];
+                            break;
+                          case 'internal':
+                            internal.innerHTML = cmd[2];
+                            break;
+                          case 'output':
+                            output.innerHTML = cmd[2];
+                            break;
+                          case 'prop':
+                            prop.innerHTML = cmd[2];
+                            break;
+                          case 'inter':
+                            inter.innerHTML = cmd[2];
+                            break;
+                          case 'derv':
+                            derv.innerHTML = cmd[2];
+                            break;
+                          default:
+                        }
+                        break;
+                      default:
+                    }
+                });
+                conn.on('close', function () {
+                    status.innerHTML = "Status: " + "Connection closed.";
+                });
+            };
+
+            /**
+             * Get first "GET style" parameter from href.
+             * This enables delivering an initial command upon page load.
+             *
+             * Would have been easier to use location.hash.
+             *
+             *DLM "Really I have no idea what this is for. It was in the example code, so I kept it."
+             */
+            function getUrlParam(name) {
+                name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+                var regexS = "[\\?&]" + name + "=([^&#]*)";
+                var regex = new RegExp(regexS);
+                var results = regex.exec(window.location.href);
+                if (results == null)
+                    return null;
+                else
+                    return results[1];
+            };
+
+            // Request a new piece of data every 250 seconds.
+            function sendRequest() {
+              if (request_itarator < request_list.length){
+                request_string = "Get " + request_list[request_itarator];
+                if (conn && conn.open){
+                  conn.send(request_string);
+                  console.log('Sent: ' + request_string);
+                }
+                request_itarator++;
+                if (request_itarator == request_list.length){
+                  request_itarator = 0;
+                }
+              }
+              setTimeout(sendRequest, 250);
+            };
+
+            // Start peer connection on click
+            connectButton.addEventListener('click', join);
+
+            // Send the new setpoint
+            set_setpoint.addEventListener('blur',function() {
+              //set_setpoint = document.getElementById("set_setpoint");
+              conn.send('Set setpoint ' + set_setpoint.value);
+            });
+
+            // Send the new proportional
+            set_prop.addEventListener('blur',function() {
+              //set_prop = document.getElementById("set_prop");
+              conn.send('Set prop ' + set_prop.value);
+            });
+
+            // Send the new integral
+            set_inter.addEventListener('blur',function() {
+              //set_inter = document.getElementById("set_inter");
+              conn.send('Set inter ' + set_inter.value);
+            });
+
+            // Send the new derivitive
+            set_derv.addEventListener('blur',function() {
+              //set_derv = document.getElementById("set_derv");
+              console.log('Sent: ' + 'Set derv ' + set_derv.value);
+              conn.send('Set derv ' + set_derv.value);
+            });
+
+            // Since all our callbacks are setup, start the process of obtaining an ID
+            initializePeerJS();
+            //sendRequest();
+        })();
+    </script>
 	</body>
 </html>
