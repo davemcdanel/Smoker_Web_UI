@@ -409,6 +409,15 @@
               conn.send('Set derv ' + set_derv.value);
             });
 
+            if ('serviceWorker' in navigator){
+              try {
+                navigator.serviceWorker.register('sw.js');
+                console.log('SW registered');
+              } catch (error) {
+                console.log('SW reg failed');
+              }
+            }
+
             // Since all our callbacks are setup, start the process of obtaining an ID
             initializePeerJS();
             //sendRequest();
