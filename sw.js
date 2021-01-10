@@ -1,6 +1,6 @@
 const staticAssets = [
   './',
-  './jquery.mobile/1.2.1/jquery.mobile-1.2.1.min.css',
+  'https://cdn.jsdelivr.net/npm/peerjs@1.2.0/dist/peerjs.min.js',
   './dunplab-manifest-31210.json',
   './dygraph-combined.js',
   './excanvas.js',
@@ -40,5 +40,5 @@ async function networkFirst(req){
     return res;
   } catch (error) {
     return await cache.match(req);
-  } 
+  }
 }
