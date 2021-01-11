@@ -4,6 +4,7 @@
 	"lang": "en",
 	"description": "Universal Smoker Control",
 	"start_url": "./Smoker_Web_UI/",
+	"scope": ".",
 	"background_color": "#121313",
 	"theme_color": "#202223",
 	"dir": "ltr",
