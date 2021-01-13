@@ -210,6 +210,14 @@
             var set_inter = document.getElementById("set_inter");
             var set_derv = document.getElementById("set_derv");
 
+            //get the temperatures data File
+            const fs = require('fs')
+
+            fs.readFile('temperatures.csv', (err, temperatures) => {
+              if (err) throw err;
+                console.log('load temperatures file' + temperatures.toString());
+            })
+
             /**
              * Create the Peer object for our end of the connection.
              *
@@ -299,6 +307,10 @@
                           case 'output':
                             console.log('Sent: ' + 'Set output ' + output.innerHTML);
                             conn.send('Set output ' + output.innerHTML);
+                            break;
+                          case 'File temperatures.csv'
+                            console.log('Sent: ' + 'Set File temperaures.csv');
+                            conn.send(temperatures);
                             break;
                           default:
                         }

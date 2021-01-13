@@ -200,9 +200,10 @@
             const setpoint = document.getElementById("setpoint");
             const internal = document.getElementById("internal");
             const output = document.getElementById("output");
-            var request_list = ["temperature","setpoint","internal","output","prop","inter","derv"];
+            var request_list = ["temperature","setpoint","internal","output","prop","inter","derv", "File temperatures.csv"];
             var request_string;
             var request_itarator = 0;
+            var temperatures = null;
 
             /**
              * Create the Peer object for our end of the connection.
@@ -330,6 +331,10 @@
                           case 'derv':
                             derv.innerHTML = cmd[2];
                             break;
+                          case 'File temperatures.csv':
+                            temperatures = cmd[2];
+                            console.log('temperatures.csv contents:' + temperatures);
+                            break;
                           default:
                         }
                         break;
@@ -360,7 +365,7 @@
                     return results[1];
             };
 
-            // Request a new piece of data every 250 seconds.
+            // Request a new piece of data every 250 milliseconds.
             function sendRequest() {
               if (request_itarator < request_list.length){
                 request_string = "Get " + request_list[request_itarator];
