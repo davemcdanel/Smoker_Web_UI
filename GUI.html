@@ -215,7 +215,7 @@
             {
               fetch(fileName)
                 .then(response => response.text())
-                .then(text => console.log('Contents of temperatures.csv: 'text));
+                .then(text => console.log('Contents of temperatures.csv: ' + text));
                 // outputs the content of the text file
                 return text;
             };
