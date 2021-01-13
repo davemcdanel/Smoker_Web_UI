@@ -211,8 +211,8 @@
             var set_derv = document.getElementById("set_derv");
 
             //get the temperatures data File
-            const fs = require('fs')
-
+            var fs = null;
+            
             fs.readFile('temperatures.csv', (err, temperatures) => {
               if (err) throw err;
                 console.log('load temperatures file' + temperatures.toString());
