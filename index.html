@@ -331,10 +331,15 @@
                           case 'derv':
                             derv.innerHTML = cmd[2];
                             break;
-                          case 'File temperatures.csv':
-                            temperatures = cmd[2];
-                            console.log('temperatures.csv contents:' + temperatures);
-                            break;
+                          case 'File'
+                            switch (cmd[3]) {
+                              case 'temperatures.csv':
+                                temperatures = data.split("Set File temperatures.csv");
+                                console.log('temperatures.csv contents:' + temperatures[1]);
+                                break;
+                              default:
+                            }
+                            break:
                           default:
                         }
                         break;
