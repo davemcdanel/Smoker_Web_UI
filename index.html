@@ -203,7 +203,14 @@
             const setpoint = document.getElementById("setpoint");
             const internal = document.getElementById("internal");
             const output = document.getElementById("output");
-            var request_list = ["temperature","setpoint","internal","output","prop","inter","derv", "File temperatures.csv"];
+            var request_list = [{type:'value', name:'temperature'},
+                                {type:'value', name:'setpoint'},
+                                {type:'value', name:'internal'},
+                                {type:'value', name:'output'},
+                                {type:'value', name:'prop'},
+                                {type:'value', name:'inter'},
+                                {type:'value', name:'derv'},
+                                {type:'file', name:'temperatures.csv'}];
             var request_string;
             var request_itarator = 0;
             var temperatures = null;
@@ -390,8 +397,8 @@
             function sendRequest() {
               if (request_itarator < request_list.length){
                 if (conn && conn.open){
-                  conn.send({ command:'Get', type:'value', name:request_list[request_itarator], payload:null });
-                  console.log('Sent: Get value ' + request_list[request_itarator]);
+                  conn.send({ command:'Get', type:request_list[request_itarator].type, name:request_list[request_itarator].name, payload:null });
+                  console.log('Sent: Get ' + request_list[request_itarator].type + ' ' + request_list[request_itarator].name);
                 }
                 request_itarator++;
                 if (request_itarator == request_list.length){
