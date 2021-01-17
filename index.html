@@ -205,6 +205,12 @@
             var request_itarator = 0;
             var temperatures = null;
 
+            // command: get or set.
+            // type: value, file.
+            // name: Name of the object.
+            // payload: value or data
+            let dataObject = { command:null, type:null, name:null, payload:null };
+
             /**
              * Create the Peer object for our end of the connection.
              *
@@ -284,66 +290,73 @@
                         conn.send(command);
                 });
                 // Handle incoming data (messages only since this is the signal sender)
-                conn.on('data', function (data) {
+                conn.on('data', function (dataObject) {
                     //addMessage("<span class=\"peerMsg\">Peer:</span> " + data);
-                    console.log("Recieved: " + data);
-                    let cmd = data.split(" ");
-                    switch (cmd[0]) {
+                    console.log("Recieved: " + dataObject);
+                    console.log('Recvd: ' + dataObject.command + ' ' + dataObject.type + ' ' + dataObject.name + ' ' + dataObject.payload);
+                    switch (dataObject.command) {
                       case 'Get':
-                        switch (cmd[1]){
-                          case 'temperature':
-                            break;
-                          case 'setpoint':
-                            break;
-                          case 'internal':
-                            break;
-                          case 'output':
-                            break;
-                          case 'prop':
-                            break;
-                          case 'inter':
-                            break;
-                          case 'derv':
-                            break;
-                          default:
-                        }
-                        break;
-                      case 'Set':
-                        switch (cmd[1]){
-                          case 'temperature':
-                            temperature.innerHTML = cmd[2];
-                            break;
-                          case 'setpoint':
-                            setpoint.innerHTML = cmd[2];
-                            break;
-                          case 'internal':
-                            internal.innerHTML = cmd[2];
-                            break;
-                          case 'output':
-                            output.innerHTML = cmd[2];
-                            break;
-                          case 'prop':
-                            prop.innerHTML = cmd[2];
-                            break;
-                          case 'inter':
-                            inter.innerHTML = cmd[2];
-                            break;
-                          case 'derv':
-                            derv.innerHTML = cmd[2];
-                            break;
-                          case 'File':
-                            switch (cmd[3]) {
-                              case 'temperatures.csv':
-                                temperatures = data.split("Set File temperatures.csv");
-                                console.log('temperatures.csv contents:' + temperatures[1]);
+                        switch (dataObject.type){
+                          case 'value':
+                            switch (dataObject.name) {
+                              case 'temperature':
+                                break;
+                              case 'setpoint':
+                                break;
+                              case 'internal':
+                                break;
+                              case 'output':
+                                break;
+                              case 'prop':
+                                break;
+                              case 'inter':
+                                break;
+                              case 'derv':
                                 break;
                               default:
                             }
-                            break;
+                          case 'file':
+                            switch (dataObject.name) {
+                              case './temperatures.csv':
+                                break;
+                              default:
+                            }
                           default:
+                            break;
                         }
-                        break;
+                      case 'Set':
+                        switch (dataObject.type){
+                          case 'value':
+                            switch (dataObject.name) {
+                              case 'temperature':
+                                temperature.innerHTML = dataObject.payload;
+                                break;
+                              case 'setpoint':
+                                setpoint.innerHTML = dataObject.payload;
+                                break;
+                              case 'internal':
+                                internal.innerHTML = dataObject.payload;
+                                break;
+                              case 'output':
+                                output.innerHTML = dataObject.payload;
+                                break;
+                              case 'prop':
+                                set_prop.value = dataObject.payload;
+                                break;
+                              case 'inter':
+                                set_inter.value = dataObject.payload;
+                                break;
+                              case 'derv':
+                                set_derv.value = dataObject.payload;
+                                break;
+                              default:
+                                break;
+                            }
+                          default:
+                           break;
+                        }
                       default:
+                        break;
                     }
                 });
                 conn.on('close', function () {
@@ -375,7 +388,7 @@
               if (request_itarator < request_list.length){
                 request_string = "Get " + request_list[request_itarator];
                 if (conn && conn.open){
-                  conn.send(request_string);
+                  conn.send({ command:'Get', type:'value', name:request_list[request_itarator], payload:null });
                   console.log('Sent: ' + request_string);
                 }
                 request_itarator++;
@@ -392,26 +405,26 @@
             // Send the new setpoint
             set_setpoint.addEventListener('blur',function() {
               //set_setpoint = document.getElementById("set_setpoint");
-              conn.send('Set setpoint ' + set_setpoint.value);
+              conn.send({ command:'Set', type:'value', name:'setpoint', payload:set_setpoint.value });
             });
 
             // Send the new proportional
             set_prop.addEventListener('blur',function() {
               //set_prop = document.getElementById("set_prop");
-              conn.send('Set prop ' + set_prop.value);
+              conn.send({ command:'Set', type:'value', name:'prop', payload:set_prop.value });
             });
 
             // Send the new integral
             set_inter.addEventListener('blur',function() {
               //set_inter = document.getElementById("set_inter");
-              conn.send('Set inter ' + set_inter.value);
+              conn.send({ command:'Set', type:'value', name:'inter', payload:set_inter.value });
             });
 
             // Send the new derivitive
             set_derv.addEventListener('blur',function() {
               //set_derv = document.getElementById("set_derv");
               console.log('Sent: ' + 'Set derv ' + set_derv.value);
-              conn.send('Set derv ' + set_derv.value);
+              conn.send({ command:'Set', type:'value', name:'derv', payload:set_derv.value });
             });
 
             if ('serviceWorker' in navigator){

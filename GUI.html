@@ -210,6 +210,12 @@
             var set_inter = document.getElementById("set_inter");
             var set_derv = document.getElementById("set_derv");
 
+            // command: get or set.
+            // type: value, file.
+            // name: Name of the object.
+            // payload: value or data
+            let dataObject = { command:null, type:null, name:null, payload:null };
+
             //get the temperatures data File
             function readTemperatureFile(fileName)
             {
@@ -289,62 +295,80 @@
              * Defines callbacks to handle incoming data and connection events.
              */
             function ready() {
-                conn.on('data', function (data) {
-                    console.log("Recieved: " + data);
-                    var cmd = data.split(" ");
-                    switch (cmd[0]) {
+                conn.on('data', function (dataObject) {
+                    console.log("Recieved: " + dataObject);
+                    console.log('Recvd: ' + dataObject.command + ' ' + dataObject.type + ' ' + dataObject.name + ' ' + dataObject.payload);
+                    switch (dataObject.command) {
                       case 'Get':
-                        switch (cmd[1]){
-                          case 'temperature':
-                            console.log('Sent: ' + 'Set temperature ' + temperature.innerHTML);
-                            conn.send('Set temperature ' + temperature.innerHTML);
-                            break;
-                          case 'setpoint':
-                            console.log('Sent: ' + 'Set setpoint ' + setpoint.innerHTML);
-                            conn.send('Set setpoint ' + setpoint.innerHTML);
-                            break;
-                          case 'internal':
-                            console.log('Sent: ' + 'Set internal ' + internal.innerHTML);
-                            conn.send('Set internal ' + internal.innerHTML);
-                            break;
-                          case 'output':
-                            console.log('Sent: ' + 'Set output ' + output.innerHTML);
-                            conn.send('Set output ' + output.innerHTML);
-                            break;
-                          case 'File temperatures.csv':
-                            console.log('Sent: ' + 'Set File temperaures.csv');
-                            conn.send('Set File temperatures.csv' + readTemperatureFile('./temperatures.csv'));
+                        switch (dataObject.type){
+                          case 'value':
+                            switch (dataObject.name) {
+                              case 'temperature':
+                                console.log('Sent: ' + 'Set temperature ' + temperature.innerHTML);
+                                conn.send({command:'Set', type:'value', name:'temperature', payload:temperature.innerHTML});
+                                break;
+                              case 'setpoint':
+                                console.log('Sent: ' + 'Set setpoint ' + setpoint.innerHTML);
+                                conn.send({command:'Set', type:'value', name:'setpoint', payload:setpoint.innerHTML});
+                                break;
+                              case 'internal':
+                                console.log('Sent: ' + 'Set internal ' + internal.innerHTML);
+                                conn.send({command:'Set', type:'value', name:'internal', payload:internal.innerHTML});
+                                break;
+                              case 'output':
+                                console.log('Sent: ' + 'Set output ' + output.innerHTML);
+                                conn.send({command:'Set',type:'value', name:'output', payload:output.innerHTML});
+                                break;
+                              default:
+                            }
+                          case 'file':
+                            switch (dataObject.name) {
+                              case './temperatures.csv':
+                                console.log('Sent: ' + dataObject.name);
+                                conn.send({command:'Set',type:'file',name:'./temperatures.csv',payload:"junk"});
+                                break;
+                              default:
+                            }
                             break;
                           default:
                         }
                         break;
-                        case 'Set':
-                          switch (cmd[1]){
-                            case 'temperature':
-                              temperature.innerHTML = cmd[2];
-                              break;
-                            case 'setpoint':
-                              setpoint.innerHTML = cmd[2];
-                              break;
-                            case 'internal':
-                              internal.innerHTML = cmd[2];
-                              break;
-                            case 'output':
-                              output.innerHTML = cmd[2];
-                              break;
-                            case 'prop':
-                              set_prop.value = cmd[2];
-                              break;
-                            case 'inter':
-                              set_inter.value = cmd[2];
-                              break;
-                            case 'derv':
-                              set_derv.value = cmd[2];
-                              break;
-                            default:
-                          }
-                          break;
+                      case 'Set':
+                        switch (dataObject.type){
+                          case 'value':
+                            switch (dataObject.name) {
+                              // TODO: This is ok for testing. The final needs to push the data
+                              // back to the cgi so it can update the driver program.  Once updated,
+                              // the driver program will report its updated values to propagate up
+                              // through the system creating a feedback loop.
+                              case 'temperature':
+                                temperature.innerHTML = dataObject.payload;
+                                break;
+                              case 'setpoint':
+                                setpoint.innerHTML = dataObject.payload;
+                                break;
+                              case 'internal':
+                                internal.innerHTML = dataObject.payload;
+                                break;
+                              case 'output':
+                                output.innerHTML = dataObject.payload;
+                                break;
+                              case 'prop':
+                                set_prop.value = dataObject.payload;
+                                break;
+                              case 'inter':
+                                set_inter.value = dataObject.payload;
+                                break;
+                              case 'derv':
+                                set_derv.value = dataObject.payload;
+                                break;
+                              default:
+                                break;
+                            }
+                        }
+                        break;
                       default:
+                        break;
                     }
                 });
                 conn.on('close', function () {
@@ -352,7 +376,6 @@
                     conn = null;
                 });
             };
-
             function sendRequest(){
               $('#temperature').load('/cgi-bin/controller','get temperature');
               $('#setpoint').load('/cgi-bin/controller','get setpoint');
