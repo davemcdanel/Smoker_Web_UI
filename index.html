@@ -203,6 +203,15 @@
             const setpoint = document.getElementById("setpoint");
             const internal = document.getElementById("internal");
             const output = document.getElementById("output");
+            dataObject_list = [{command:null, type:'value', name:'temperature', payload:null },
+                               {command:null, type:'value', name:'setpoint', payload:null },
+                               {command:null, type:'value', name:'internal', payload:null },
+                               {command:null, type:'value', name:'output', payload:null },
+                               {command:null, type:'value', name:'prop', payload:null },
+                               {command:null, type:'value', name:'inter', payload:null },
+                               {command:null, type:'value', name:'derv', payload:null },
+                               {command:null, type:'file', name:'temperatures.csv', payload:null }];
+
             var request_list = [{type:'value', name:'temperature'},
                                 {type:'value', name:'setpoint'},
                                 {type:'value', name:'internal'},
