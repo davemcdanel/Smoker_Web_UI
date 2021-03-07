@@ -188,7 +188,7 @@
     <script src="https://cdn.jsdelivr.net/npm/peerjs@1.2.0/dist/peerjs.min.js"></script>
     <script type="text/javascript">
         (function () {
-          var version = '0.2.2';
+          var version = '0.2.3';
           var title = document.getElementById("title");
           title.innerHTML = 'Dave\'s Red Smoker ' + version;
 
@@ -203,7 +203,7 @@
             const setpoint = document.getElementById("setpoint");
             const internal = document.getElementById("internal");
             const output = document.getElementById("output");
-            dataObject_list = [{command:null, type:'value', name:'temperature', payload:null },
+            var dataObject_list = [{command:null, type:'value', name:'temperature', payload:null },
                                {command:null, type:'value', name:'setpoint', payload:null },
                                {command:null, type:'value', name:'internal', payload:null },
                                {command:null, type:'value', name:'output', payload:null },
@@ -254,6 +254,7 @@
 
                     console.log('ID: ' + peer.id);
                 });
+
                 peer.on('connection', function (c) {
                     // Disallow incoming connections
                     c.on('open', function() {
@@ -261,6 +262,7 @@
                         setTimeout(function() { c.close(); }, 500);
                     });
                 });
+
                 peer.on('disconnected', function () {
                     status.innerHTML = "Status: " + "Connection lost. Please reconnect.";
                     console.log('Connection lost. Please reconnect');
@@ -270,11 +272,13 @@
                     peer._lastServerId = lastPeerId;
                     peer.reconnect();
                 });
+
                 peer.on('close', function() {
                     conn = null;
                     status.innerHTML = "Status: " + "Connection destroyed. Please refresh.";
                     console.log('Connection destroyed');
                 });
+
                 peer.on('error', function (err) {
                     console.log(err);
                     alert('' + err);
@@ -294,6 +298,7 @@
                 }
 
                 console.log('Clicked - Connect');
+
                 // Create connection to destination peer specified in the input field
                 conn = peer.connect(recvIdInput.value, {
                     reliable: true
@@ -308,6 +313,7 @@
                     if (command)
                         conn.send(command);
                 });
+
                 // Handle incoming data (messages only since this is the signal sender)
                 conn.on('data', function (dataObject) {
                     //addMessage("<span class=\"peerMsg\">Peer:</span> " + data);
