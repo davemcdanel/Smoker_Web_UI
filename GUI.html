@@ -219,13 +219,13 @@
             let dataObject = { command:null, type:null, name:null, payload:null };
 
             //get the temperatures data File
-            function readTemperatureFile(fileName)
-            {
+            function readTemperatureFile(fileName) {
               //Read InsideFolder.txt File
               fetch(filename).then(function(response) {
                 response.text().then(function(text) {
-                  document.getElementById("appData").innerHTML = text
-                  return text;})
+                  document.getElementById("appData").innerHTML = text;
+                  return text;
+                });
               });
             };
 
