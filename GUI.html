@@ -10,8 +10,8 @@
 		<meta http-equiv="pragma" content="no-cache" />
 		<!--<meta http-equiv="refresh" content="300" >-->
     <title>Dave's Red Smoker</title>
-		<link rel="icon" type="image/png" href="favicon_min.png" />
-		<link rel="apple-touch-icon" type="image/png" href="BrowserIcon_min.png" />
+		<link rel="icon" type="image/png" href="./images/favicon_min.png" />
+		<link rel="apple-touch-icon" type="image/png" href="./images/BrowserIcon_min.png" />
         <link rel="stylesheet" href="jquery.mobile/1.2.1/jquery.mobile-1.2.1.min.css" />
         <style>
             /* App custom styles */
@@ -221,11 +221,12 @@
             //get the temperatures data File
             function readTemperatureFile(fileName)
             {
-              fetch(fileName)
-                .then(response => response.text())
-                .then(text => console.log('Contents of temperatures.csv: ' + text));
-                // outputs the content of the text file
-                return text;
+              //Read InsideFolder.txt File
+              fetch(filename).then(function(response) {
+                response.text().then(function(text) {
+                  document.getElementById("appData").innerHTML = text
+                  return text;}
+              });
             };
 
 
